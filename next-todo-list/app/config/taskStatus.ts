@@ -1,0 +1,7 @@
+export const taskStatus = {
+  BACKLOG: "Backlog",
+  TODO: "Todo",
+  IN_PROGRESS: "In progress",
+  DONE: "Done",
+  CANCELLED: "Cancelled",
+};
