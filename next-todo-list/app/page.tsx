@@ -33,8 +33,8 @@ export default function Home() {
   const tasks = [
     {
       uid: "1",
-      title: "Connect Github Account",
-      description: "Lorem ipsum dolor sit amit consectetur",
+      title: "Connect Github Account via google meet and my account from your house",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
       status: taskStatus.BACKLOG,
       tags: ["1", "2"],
       date: "Jan 02-23-2023",
@@ -65,7 +65,7 @@ export default function Home() {
     },
     {
       uid: "5",
-      title: "3205 Reporting - Thursday",
+      title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore",
       description: "Report on chapter 2 - Privacy. Refer to the book (`The book of fire`)",
       status: taskStatus.DONE,
       tags: ["3"],
@@ -73,7 +73,7 @@ export default function Home() {
     },
     {
       uid: "6",
-      title: "3205 Reporting - Thursday",
+      title: "3205 Reporting - ThurLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.sday",
       description: "Report on chapter 2 - Privacy. Refer to the book (`The book of fire`)",
       status: taskStatus.CANCELLED,
       tags: ["4"],
@@ -91,8 +91,10 @@ export default function Home() {
   return (
     <main className="bg-[#121216] pt-24 pl-24 pr-24 min-h-screen flex flex-col gap-8">
       <div className="flex flex-col gap-1">
-        <div className="flex justify-between">
-          <h1 className="text-4xl font-semibold">Kanban Board</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-4xl font-semibold">
+            Kanban Board
+          </h1>
 
           {/* accounts */}
           <div className="flex gap-3 items-center border border-gray/20 rounded-full pt-1 pr-8 pb-1 pl-2">

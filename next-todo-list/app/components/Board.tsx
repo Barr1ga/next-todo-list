@@ -1,6 +1,7 @@
 import Card from "@/app/components/Card";
 import { Task, Board } from "@/.next/types/app/interfaces"
 import { HiOutlinePlus } from "react-icons/hi"
+import Modal from "@/app/components/Modal"
 
 export default function board({ boardName, tasks }: Board) {
   const tasksCount = tasks.length;
@@ -12,7 +13,8 @@ export default function board({ boardName, tasks }: Board) {
           <div>{boardName}</div>
           <div className="opacity-40">{tasksCount}</div>
         </span>
-        <button className="flex items-center gap-2"><HiOutlinePlus></HiOutlinePlus>Add</button>
+        <Modal></Modal>
+        <button className="flex items-center gap-2 opacity-40 hover:opacity-100  ease-out duration-200"><HiOutlinePlus></HiOutlinePlus>Add</button>
       </span>
 
       <div className="flex flex-col gap-2">

@@ -11,9 +11,9 @@ module.exports = {
   theme: {
     colors: {
       color1: "#27e64d",
-      color2: "#278de6",
-      color3: "#9a63ff",
-      color4: "#9a63ff",
+      color2: "#1962ff",
+      color3: "#7a38ff",
+      color4: "#ff3651",
       color5: "#ff5297",
       color6: "#f0353b",
       color7: "#f08635",
@@ -22,6 +22,9 @@ module.exports = {
       color10: "#eca1ff",
       color11: "#aeffa1",
       color12: "#aeffa1",
+      cardBackground: "#1b1d24",
+      cardBackgroundHover: "#2b2d36",
+      cardBody: "#0e0f13",
       gray: "#d8dcec",
     },
     fontFamily: {
