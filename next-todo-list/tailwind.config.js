@@ -22,6 +22,7 @@ module.exports = {
       color10: "#eca1ff",
       color11: "#aeffa1",
       color12: "#aeffa1",
+      gray: "#d8dcec",
     },
     fontFamily: {
       notoStans: ["var(--font-noto-sans)"],

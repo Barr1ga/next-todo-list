@@ -42,6 +42,8 @@
   --callout-border-rgb: 172, 175, 176;
   --card-rgb: 180, 185, 188;
   --card-border-rgb: 131, 134, 135;
+
+  --gray: rgb(216 220 236 / 0.2);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -108,4 +110,21 @@ a {
   html {
     color-scheme: dark;
   }
+}
+
+
+/* Forms */
+
+.btn-secondary {
+  border: 1px solid var(--gray);
+  border-radius: 0.25rem;
+  padding: 0 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-secondary p {
+  font-size: 0.75rem;
 }
