@@ -93,7 +93,6 @@ export default function Home() {
   const doneTasks = tasks.filter((task) => task.status === taskStatus.DONE);
   const cancelledTasks = tasks.filter((task) => task.status === taskStatus.CANCELLED);
 
-  console.log(backLogTasks)
   return (
     <main className="bg-background pt-24 pl-24 pr-24 min-h-screen flex flex-col gap-8">
       <div className="flex flex-col gap-2">

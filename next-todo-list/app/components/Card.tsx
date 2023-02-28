@@ -13,7 +13,9 @@ import Dropdown from "./Dropdown";
 
 export default function Card({ task }: { task: Task }) {
     const date = format(new Date(task.date), "PPpp");
-    const [isPickStatus, setIsPickStatus] = useState<boolean>(false);
+    const [status, setStatus] = useState(task.status);
+
+    console.log(status)
 
     const statusOptions = {
         options: Object.values(taskStatus),
@@ -34,13 +36,8 @@ export default function Card({ task }: { task: Task }) {
                             ))}
                         </div>
                     </div>
-
-                    {/* {task.status === taskStatus.BACKLOG && <button onClick={() => setIsPickStatus(true)} className="flex items-center gap-2">📩</button>}
-                    {task.status === taskStatus.TODO && <button onClick={() => setIsPickStatus(true)} className="flex items-center gap-2">🎯</button>}
-                    {task.status === taskStatus.IN_PROGRESS && <button onClick={() => setIsPickStatus(true)} className="flex items-center gap-2">🚚</button>}
-                    {task.status === taskStatus.DONE && <button onClick={() => setIsPickStatus(true)} className="flex items-center gap-2">✅</button>}
-                    {task.status === taskStatus.CANCELLED && <button onClick={() => setIsPickStatus(true)} className="flex items-center gap-2">❌</button>} */}
                 </div>
+
                 <div className="bg-dark px-3 py-2 border-t border-gray/10 ease-in-out transition-all duration-1000 rounded-bl-[4px] rounded-br-[4px] flex flex-col gap-2">
                     <small className="opacity-40">{date}</small>
                     <p className="text-sm">{task.title}</p>
@@ -48,7 +45,7 @@ export default function Card({ task }: { task: Task }) {
                     <hr className="opacity-10"></hr>
 
                     <div className="w-full flex justify-end">
-                        <Dropdown options={statusOptions.options} defaultValue={statusOptions.defaultValue}></Dropdown>
+                        <Dropdown stateValue={status} stateSetter={setStatus} options={statusOptions.options}></Dropdown>
                     </div>
                 </div>
             </div>

@@ -11,26 +11,22 @@ export default function Filters() {
         { uid: "4", name: "Guest", color: "color4" },
     ]
 
-    const tagOptions = {
-        options: tags.map((tag) => tag.name),
-        defaultValue: "All"
-    };
-
+    const tagOptions = ["All", ...tags.map((tag) => tag.name)];
     const sortOptions = [
-        "ascending",
-        "descending",
+        "Ascending",
+        "Descending",
     ]
 
-    const [tagUidFilter, setTagsFilter] = useState(tags[0].uid);
-    const selectedTag = tags.find((tag) => tagUidFilter === tag.uid);
+    const [tagsFilter, setTagsFilter] = useState<string>(tagOptions[0]);
+    const [sortFIlter, setSortFilter] = useState<string>(sortOptions[0]);
 
     return (
         <div className="flex gap-2">
             {/* tags */}
-            <Dropdown options={tagOptions}></Dropdown>
+            <Dropdown stateValue={tagsFilter} stateSetter={setTagsFilter} options={tagOptions}></Dropdown>
 
             {/* sort */}
-            <Dropdown options={sortOptions}></Dropdown>
+            <Dropdown stateValue={sortFIlter} stateSetter={setSortFilter} options={sortOptions}></Dropdown>
         </div>
     )
 }

@@ -45,10 +45,6 @@ export default function AddTask({ boardName, triggerComponent, methodType, defau
     const cancelButtonRef = useRef(null);
     const titleRef = useRef<HTMLInputElement | null>(null);
 
-    console.log(defaultValues)
-
-
-
     useEffect(() => {
         if (titleRef.current) {
             titleRef.current.focus();
