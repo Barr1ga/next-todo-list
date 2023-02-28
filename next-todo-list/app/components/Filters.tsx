@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react"
 import { HiChevronDown, HiChevronUp } from "react-icons/hi"
+import Dropdown from "@/app/components/Dropdown"
 
 export default function Filters() {
     const tags = [
@@ -10,30 +11,26 @@ export default function Filters() {
         { uid: "4", name: "Guest", color: "color4" },
     ]
 
+    const tagOptions = {
+        options: tags.map((tag) => tag.name),
+        defaultValue: "All"
+    };
+
+    const sortOptions = [
+        "ascending",
+        "descending",
+    ]
+
     const [tagUidFilter, setTagsFilter] = useState(tags[0].uid);
     const selectedTag = tags.find((tag) => tagUidFilter === tag.uid);
 
     return (
         <div className="flex gap-2">
             {/* tags */}
-            <div className="flex gap-2">
-                <button className="btn-secondary">
-                    <p>
-                        {selectedTag ? selectedTag.name : tags[0].name}
-                    </p>
-                    <HiChevronDown></HiChevronDown>
-                </button>
-            </div>
+            <Dropdown options={tagOptions}></Dropdown>
 
             {/* sort */}
-            <div className="flex gap-2">
-                <button className="btn-secondary">
-                    <p>
-                        Sort
-                    </p>
-                    <HiChevronDown></HiChevronDown>
-                </button>
-            </div>
+            <Dropdown options={sortOptions}></Dropdown>
         </div>
     )
 }

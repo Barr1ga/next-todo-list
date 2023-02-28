@@ -112,19 +112,3 @@ a {
   }
 }
 
-
-/* Forms */
-
-.btn-secondary {
-  border: 1px solid var(--gray);
-  border-radius: 0.25rem;
-  padding: 0 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.btn-secondary p {
-  font-size: 0.75rem;
-}

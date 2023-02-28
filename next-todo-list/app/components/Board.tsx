@@ -1,10 +1,23 @@
+"use client";
+
 import Card from "@/app/components/Card";
-import { Task, Board } from "@/.next/types/app/interfaces"
+import { Task, Board } from "@/app/config/interfaceTypes"
+import { methodTypes } from "@/app/config/methodTypes";
 import { HiOutlinePlus } from "react-icons/hi"
-import Modal from "@/app/components/Modal"
+import { useState } from "react";
+import TaskModal from "@/app/components/TaskModal"
 
 export default function board({ boardName, tasks }: Board) {
+  const [addModal, setAddModal] = useState<boolean>(false);
   const tasksCount = tasks.length;
+  const defaultValues = {
+    title: "",
+    description: "",
+    status: "",
+    tags: [],
+    isPrivate: false,
+    date: "",
+  }
 
   return (
     <div className="flex flex-col gap-2 flex-1">
@@ -13,8 +26,13 @@ export default function board({ boardName, tasks }: Board) {
           <div>{boardName}</div>
           <div className="opacity-40">{tasksCount}</div>
         </span>
-        <Modal></Modal>
-        <button className="flex items-center gap-2 opacity-40 hover:opacity-100  ease-out duration-200"><HiOutlinePlus></HiOutlinePlus>Add</button>
+        <TaskModal boardName={boardName.slice(2)} triggerComponent={
+          <button
+            className="flex items-center gap-2 opacity-40 hover:opacity-100 ease-out duration-200">
+            <HiOutlinePlus></HiOutlinePlus>
+            Add
+          </button>
+        } methodType={methodTypes.CREATE} defaultValues={defaultValues}></TaskModal>
       </span>
 
       <div className="flex flex-col gap-2">
