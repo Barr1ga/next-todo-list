@@ -1,13 +1,15 @@
 "use client";
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import { HiOutlinePlus, HiLockClosed, HiOutlineX } from "react-icons/hi"
+import { HiOutlinePlus, HiLockClosed, HiOutlineX, HiOutlineRefresh } from "react-icons/hi"
 import { Tag, Task } from "@/app/config/interfaceTypes"
 import TextareaAutosize from 'react-textarea-autosize';
 import Dropdown from "@/app/components/Dropdown"
 import HashTag from './HashTag';
 import Checkbox from './Checkbox';
 import { methodTypes } from '../config/methodTypes';
+import { taskStatus } from '../config/taskStatus';
+import AssignTags from './AssignTags';
 
 interface Props {
     open: boolean;
@@ -29,27 +31,33 @@ const colors = {
     color12: "#aeffa1",
 }
 
-const tags = [
-    { uid: "1", name: "Scool", color: "color1" },
-    { uid: "2", name: "Family", color: "color2" },
-    { uid: "3", name: "Work", color: "color3" },
-    { uid: "4", name: "Guest", color: "color4" },
-]
+export default function TaskModal({ boardName, triggerComponent, methodType, defaultValues }: { boardName: string, triggerComponent: any, methodType: string, defaultValues: Task }) {
+    const tags = [
+        { uid: "1", name: "Scool", color: "color1" },
+        { uid: "2", name: "Family", color: "color2" },
+        { uid: "3", name: "Work", color: "color3" },
+        { uid: "4", name: "Guest", color: "color4" },
+    ]
 
-export default function AddTask({ boardName, triggerComponent, methodType, defaultValues }: { boardName: string, triggerComponent: any, methodType: string, defaultValues: Task }) {
     const [open, setOpen] = useState(false);
-    const [assignedTags, setAssignedTags] = useState<Tag[]>(tags.filter((tag) => defaultValues?.tags.includes(tag.uid)));
+    const [assignedTags, setAssignedTags] = useState(
+        methodType === methodTypes.CREATE ? [] : defaultValues.tags
+    );
     const [isPrivate, setIsPrivate] = useState<boolean>(defaultValues?.isPrivate ? true : false);
     const [title, setTitle] = useState<string>("");
     const [description, setDescription] = useState<string>("");
     const cancelButtonRef = useRef(null);
     const titleRef = useRef<HTMLInputElement | null>(null);
+    const [status, setStatus] = useState(defaultValues.status);
 
-    useEffect(() => {
-        if (titleRef.current) {
-            titleRef.current.focus();
-        }
-    }, [])
+    const statusOptions = {
+        options: Object.values(taskStatus),
+        defaultValue: Object.values(taskStatus).findIndex((status) => status === defaultValues.status)
+    }
+
+    function assignTag(uid: string) {
+        setAssignedTags([...assignedTags, uid]);
+    }
 
     function onSubmit() {
         const data = {
@@ -88,8 +96,8 @@ export default function AddTask({ boardName, triggerComponent, methodType, defau
                         <div className="fixed inset-0 bg-dark bg-opacity-50 backdrop-blur-sm transition-opacity" />
                     </Transition.Child>
 
-                    <div className="fixed inset-0 z-10 overflow-y-auto">
-                        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                    <div className="fixed inset-0 z-10 overflow-y-auto overflow-x-visible">
+                        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0 overflow-x-visible">
                             <Transition.Child
                                 as={Fragment}
                                 enter="ease-out duration-300"
@@ -99,13 +107,19 @@ export default function AddTask({ boardName, triggerComponent, methodType, defau
                                 leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                             >
-                                <Dialog.Panel className="flex flex-col gap-4 items-start relative bg-cardBackground border border-gray/10 transform overflow-hidden rounded-lg shadow-xl shadow-dark/40 transition-all sm:my-8 sm:w-full sm:max-w-lg p-4">
-                                    <span className='text-2xl font-semibold flex justify-between w-full'>
-                                        {methodType} {boardName}
+                                <Dialog.Panel className="flex flex-col gap-4 items-start relative bg-cardBackground border border-gray/10 transform rounded-lg shadow-2xl shadow-[#000]/40 transition-all sm:my-8 sm:w-full sm:max-w-lg p-4 overflow-x-visible">
+                                    <span className='text-2xl font-semibold flex justify-between w-full mb-4'>
+                                        <div className="flex items-center gap-4">
+
+                                            {/* title */}
+                                            {methodType} {boardName}
+                                            {methodType === methodTypes.UPDATE && <Dropdown stateValue={status} stateSetter={setStatus} options={statusOptions.options}></Dropdown>}
+                                        </div>
                                         <button type="button" onClick={() => setOpen(false)} className="opacity-40 hover:opacity-100 ease-out duration-200">
                                             <HiOutlineX></HiOutlineX>
                                         </button>
                                     </span>
+
 
                                     <form className='flex flex-col gap-4 w-full'>
                                         {/* title */}
@@ -135,11 +149,11 @@ export default function AddTask({ boardName, triggerComponent, methodType, defau
                                         {/* tags */}
                                         <div className="flex flex-col gap-2 items-start w-full">
                                             <label className='text-sm'>Tags</label>
-                                            <div className='flex gap-1 mt-2'>
+                                            <div className='flex w-full flex-wrap gap-1 mt-2'>
                                                 {assignedTags.map((tag, idx: number) => (
-                                                    <HashTag key={idx} tag={tag.uid} withX={true}></HashTag>
+                                                    <HashTag key={idx} tag={tag} withX={true}></HashTag>
                                                 ))}
-                                                <button type="button" className="flex items-center justify-center border border-gray/10 hover:bg-gray/10 rounded h-[22px] w-[22px]  ease-out duration-200"><HiOutlinePlus></HiOutlinePlus></button>
+                                                <AssignTags assignedTags={assignedTags} tagSelector={assignTag} assignTags={true} all={false}></AssignTags>
                                             </div>
                                         </div>
 
@@ -169,14 +183,26 @@ export default function AddTask({ boardName, triggerComponent, methodType, defau
                                         >
                                             Cancel
                                         </button>
-                                        <button
+
+                                        {/* create */}
+                                        {methodType === methodTypes.CREATE && <button
                                             type="button"
                                             className="bg-primary hover:bg-[#ffffff] hover:text-[#000000] flex justify-center items-center gap-2 rounded-md border border-gray/10 bg-white px-4 py-2 text-sm font-semibold ease-out duration-200"
                                             onClick={onSubmit}
                                             ref={cancelButtonRef}
                                         >
                                             <HiOutlinePlus></HiOutlinePlus>Add
-                                        </button>
+                                        </button>}
+
+                                        {/* update */}
+                                        {methodType === methodTypes.UPDATE && <button
+                                            type="button"
+                                            className="bg-primary hover:bg-[#ffffff] hover:text-[#000000] flex justify-center items-center gap-2 rounded-md border border-gray/10 bg-white px-4 py-2 text-sm font-semibold ease-out duration-200"
+                                            onClick={onSubmit}
+                                            ref={cancelButtonRef}
+                                        >
+                                            <HiOutlineRefresh className='opacity-40'></HiOutlineRefresh>Update
+                                        </button>}
                                     </div>
                                 </Dialog.Panel>
                             </Transition.Child>

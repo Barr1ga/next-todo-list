@@ -10,7 +10,7 @@ module.exports = {
   ],
   theme: {
     colors: {
-      primary: "#7b4fff",
+      primary: "#602bff",
       admin: "#ff9d26",
       color1: "#27e64d",
       color2: "#1962ff",
@@ -24,11 +24,11 @@ module.exports = {
       color10: "#eca1ff",
       color11: "#aeffa1",
       color12: "#aeffa1",
-      background: "#13131a",
-      cardBackground: "#1b1d24",
-      cardBackgroundHover: "#2b2d36",
-      dark: "#0e0f13",
+      cardBackground: "#2b2d36",
+      cardBackgroundHover: "#444757",
+      dark: "#1b1b21",
       gray: "#d8dcec",
+      background: "#0c0c0f",
     },
     fontFamily: {
       notoStans: ["var(--font-noto-sans)"],

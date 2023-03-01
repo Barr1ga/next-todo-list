@@ -15,8 +15,6 @@ export default function Card({ task }: { task: Task }) {
     const date = format(new Date(task.date), "PPpp");
     const [status, setStatus] = useState(task.status);
 
-    console.log(status)
-
     const statusOptions = {
         options: Object.values(taskStatus),
         defaultValue: Object.values(taskStatus).findIndex((status) => status === task.status)
@@ -26,9 +24,9 @@ export default function Card({ task }: { task: Task }) {
         <TaskModal boardName={"Task"} triggerComponent={
             <div className="hover:shadow-xl hover:shadow-[#000]/30 bg-cardBackground rounded border border-gray/10 hover:bg-cardBackgroundHover ease-out duration-200 flex flex-col cursor-pointer">
                 <div className="flex justify-between items-center p-2 gap-4">
-                    <div className="flex gap-2 items-center">
-                        <div className="flex justify-center items-center h-[15px] w-[15px] rounded-full border border-gray/40 bg-gray/5 border-dashed">
-                            <div className="bg-gray/40 rounded-full h-[5px] w-[5px]"></div>
+                    <div className="flex gap-2">
+                        <div className="flex mt-[4px] justify-center items-center h-[15px] min-w-[15px] rounded-full border border-gray/40 bg-gray/5 border-dashed">
+                            <div className="bg-gray/40 rounded-full h-[5px] min-w-[5px]"></div>
                         </div>
                         <div className="flex gap-1 flex-wrap">
                             {task.tags.map((tag: string, idx: number) => (

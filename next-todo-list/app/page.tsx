@@ -1,34 +1,12 @@
-import Image from 'next/image'
-import styles from './page.module.css'
-import { useState } from "react"
-
 import Board from '@/app/components/Board'
 import { taskStatus } from './config/taskStatus'
 import Filters from './components/Filters'
+import SidePanel from './components/SidePanel';
+import { format } from "date-fns"
+import { HiClock } from 'react-icons/hi';
 
 export default function Home() {
   const workspace = "3206 - Integrative Programming Workspace";
-
-  const users = [
-    {
-      uid: "1",
-      username: "Horeb",
-      token: "1",
-      userType: "guest",
-    },
-    {
-      uid: "1",
-      username: "Horeb",
-      token: "2",
-      userType: "Administrator",
-    },
-    {
-      uid: "1",
-      username: "Horeb",
-      token: "3",
-      userType: "master",
-    }
-  ]
 
   const tasks = [
     {
@@ -36,7 +14,7 @@ export default function Home() {
       title: "Connect Github Account via google meet and my account from your house",
       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
       status: taskStatus.BACKLOG,
-      tags: ["1", "2"],
+      tags: ["1", "2", "3", "4"],
       isPrivate: false,
       date: new Date().toISOString(),
     },
@@ -93,46 +71,49 @@ export default function Home() {
   const doneTasks = tasks.filter((task) => task.status === taskStatus.DONE);
   const cancelledTasks = tasks.filter((task) => task.status === taskStatus.CANCELLED);
 
+  const dateToday = format(new Date(), "PPpp");
+
   return (
-    <main className="bg-background pt-24 pl-24 pr-24 min-h-screen flex flex-col gap-8">
-      <div className="flex flex-col gap-2">
-        <div className="flex justify-between items-center">
-          <h1 className="text-4xl font-semibold">
-            Kanban Board
-          </h1>
+    <main className="flex min-h-screen bg-background">
 
-          {/* accounts */}
-          <div className="flex gap-3 items-center border border-gray/20 rounded-full pt-1 pr-8 pb-1 pl-2 hover:bg-gray/10 ease-out duration-200 cursor-pointer">
-            <div className="bg-primary h-[30px] w-[30px] rounded-full text-[#fff] flex items-center justify-center">{"H"}</div>
-            <div className="flex flex-col gap-0">
-              <h5 className='text-sm font-semibold'>{"Barriga, Horeb"}</h5>
-              <small className="opacity-40 text-xs">{"Administrator"}</small>
+      <SidePanel></SidePanel>
+
+      <div className="bg-dark mt-4 rounded-lg pl-2 pt-2 pr-8 flex flex-col gap-8">
+        {/* date today */}
+        <small className="opacity-40 flex gap-2 items-center"><HiClock></HiClock> {dateToday}</small>
+
+        {/* headers */}
+        <div className="flex pt-8 pl-12 flex-col gap-2">
+          <div className="flex justify-between items-center">
+            <h1 className="text-4xl font-semibold">
+              Kanban Board
+            </h1>
+          </div>
+
+
+          {/* workspace */}
+          <div className="flex items-center gap-8">
+            <div className="text-sm flex gap-1">
+              <span className="opacity-40">Workspace</span>
+              <p className="bg-primary/20 px-2 rounded-full text-primary">{workspace}</p>
+              <p className="bg-admin/20 px-2 rounded-full text-admin">{"admin-view"}</p>
             </div>
-          </div>
-        </div>
 
-        {/* workspace */}
-        <div className="flex items-center gap-8">
-          <div className="text-sm flex gap-4">
-            <span className="opacity-40">Workspace</span>
-            <p className="bg-primary/20 px-2 rounded-full text-primary">{workspace}</p>
-            <p className="bg-admin/20 px-2 rounded-full text-admin">{"admin-view"}</p>
+            <Filters></Filters>
           </div>
 
-          <Filters></Filters>
+          <hr className='text-gray/20'></hr>
         </div>
 
-        <hr className='text-gray/20'></hr>
-      </div>
 
-
-      {/* kanban */}
-      <div className="flex gap-8 w-full flex-1">
-        <Board boardName={"📩 Backlog"} tasks={backLogTasks}></Board>
-        <Board boardName={"🎯 Todo"} tasks={toDoTasks}></Board>
-        <Board boardName={"🚚 In Progress"} tasks={inProgressTasks}></Board>
-        <Board boardName={"✅ Done"} tasks={doneTasks}></Board>
-        <Board boardName={"❌ Cancelled"} tasks={cancelledTasks}></Board>
+        {/* kanban */}
+        <div className="flex gap-8 pl-12 w-full flex-1">
+          <Board boardName={"📩 Backlog"} tasks={backLogTasks}></Board>
+          <Board boardName={"🎯 Todo"} tasks={toDoTasks}></Board>
+          <Board boardName={"🚚 In Progress"} tasks={inProgressTasks}></Board>
+          <Board boardName={"✅ Done"} tasks={doneTasks}></Board>
+          <Board boardName={"❌ Cancelled"} tasks={cancelledTasks}></Board>
+        </div>
       </div>
     </main>
   )

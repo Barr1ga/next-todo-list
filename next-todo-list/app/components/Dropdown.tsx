@@ -30,14 +30,14 @@ export default function Dropdown({ stateValue, stateSetter, options }: { stateVa
         leaveTo="transform opacity-0 scale-95"
       >
         <Menu.Items className="bg-dark border py-1 border-gray/20 absolute right-0 z-10 mt-1 w-56 origin-top-right rounded-md bg-white shadow-xl shadow-[#000]/30  ring-opacity-5 focus:outline-none">
-          {options.map((option) =>
-            <Menu.Item onClick={(e) => {
+          {options.map((option, idx) =>
+            <Menu.Item key={idx} onClick={(e) => {
               e.stopPropagation();
-              setter(option)
+              stateSetter(option)
             }}>
               {({ active }) => (
                 <button type="button"
-                  className="hover:bg-cardBackground flex justify-start items center px-4 py-2 text-sm ease-out duration-200 w-full"
+                  className="hover:bg-cardBackground flex justify-start items center px-4 py-2 text-sm ease-out duration-200 w-full font-normal"
                 >
                   {option}
                 </button>
