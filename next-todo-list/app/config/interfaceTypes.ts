@@ -12,7 +12,7 @@ export interface Tag {
   color: string;
 }
 
-export interface Task {
+export type Task = {
   title: string;
   description: string;
   status: string;

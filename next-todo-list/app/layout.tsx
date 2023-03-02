@@ -1,5 +1,11 @@
+"use client"
+
 import './globals.css'
 import { Noto_Sans } from 'next/font/google'
+import { ConvexProvider, ConvexReactClient } from "convex/react";
+
+// TODO: note!
+const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL ? process.env.NEXT_PUBLIC_CONVEX_URL : "");
 
 const notoSans = Noto_Sans({
   weight: ["400", "700"],
@@ -18,8 +24,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={`${notoSans.className}`}>{children}</body>
-    </html>
+    <ConvexProvider client={convex}>
+      <html lang="en">
+        <body className={`${notoSans.className}`}>
+          {children}
+        </body>
+      </html>
+    </ConvexProvider>
   )
 }

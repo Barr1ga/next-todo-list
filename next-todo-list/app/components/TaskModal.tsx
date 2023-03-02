@@ -1,4 +1,5 @@
 "use client";
+import { useMutation, useQuery } from "@/convex/_generated/react";
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { HiOutlinePlus, HiLockClosed, HiOutlineX, HiOutlineRefresh, HiOutlineTrash } from "react-icons/hi"
@@ -50,6 +51,9 @@ export default function TaskModal({ boardName, triggerComponent, methodType, def
     const titleRef = useRef<HTMLInputElement | null>(null);
     const [status, setStatus] = useState(defaultValues.status);
 
+    const createTaskMutation = useMutation("tasks/createTask");
+    const updateTaskMutation = useMutation("tasks/createTask");
+
     const statusOptions = {
         options: Object.values(taskStatus),
         defaultValue: Object.values(taskStatus).findIndex((status) => status === defaultValues.status)
@@ -59,21 +63,43 @@ export default function TaskModal({ boardName, triggerComponent, methodType, def
         setAssignedTags([...assignedTags, uid]);
     }
 
+    async function createTask(data: Task) {
+        const res = await createTaskMutation(data);
+        if (!res) {
+            throw new Error('Failed to fetch data');
+        }
+
+        return res;
+    }
+
+    async function updateTask(data: Task) {
+        const res = await createTaskMutation(data);
+        if (!res) {
+            throw new Error('Failed to fetch data');
+        }
+
+        return res;
+    }
+
     function onSubmit() {
         const data = {
             title,
             description,
+            status,
+            tags: assignedTags,
             isPrivate,
-            assignedTags,
+            date: new Date().toISOString(),
         }
 
         if (methodType === methodTypes.CREATE) {
-            console.log("create");
+            const result = createTask(data);
             console.log(data);
         }
 
         if (methodType === methodTypes.UPDATE) {
             console.log("Update");
+            console.log(data);
+
         }
 
         setOpen(false);
@@ -223,3 +249,5 @@ export default function TaskModal({ boardName, triggerComponent, methodType, def
         </>
     )
 }
+
+

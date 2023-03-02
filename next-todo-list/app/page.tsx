@@ -5,7 +5,7 @@ import SidePanel from './components/SidePanel';
 import { format } from "date-fns"
 import { HiClock } from 'react-icons/hi';
 
-export default function Home() {
+export default function App() {
   const workspace = "3206 - Integrative Programming Workspace";
 
   const tasks = [
