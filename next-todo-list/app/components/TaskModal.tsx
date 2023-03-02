@@ -1,7 +1,7 @@
 "use client";
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import { HiOutlinePlus, HiLockClosed, HiOutlineX, HiOutlineRefresh } from "react-icons/hi"
+import { HiOutlinePlus, HiLockClosed, HiOutlineX, HiOutlineRefresh, HiOutlineTrash } from "react-icons/hi"
 import { Tag, Task } from "@/app/config/interfaceTypes"
 import TextareaAutosize from 'react-textarea-autosize';
 import Dropdown from "@/app/components/Dropdown"
@@ -93,7 +93,7 @@ export default function TaskModal({ boardName, triggerComponent, methodType, def
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <div className="fixed inset-0 bg-dark bg-opacity-50 backdrop-blur-sm transition-opacity" />
+                        <div className="fixed inset-0 bg-background bg-opacity-50 backdrop-blur-sm transition-opacity" />
                     </Transition.Child>
 
                     <div className="fixed inset-0 z-10 overflow-y-auto overflow-x-visible">
@@ -107,7 +107,7 @@ export default function TaskModal({ boardName, triggerComponent, methodType, def
                                 leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                             >
-                                <Dialog.Panel className="flex flex-col gap-4 items-start relative bg-cardBackground border border-gray/10 transform rounded-lg shadow-2xl shadow-[#000]/40 transition-all sm:my-8 sm:w-full sm:max-w-lg p-4 overflow-x-visible">
+                                <Dialog.Panel className="flex flex-col gap-4 items-start relative bg-dark border border-gray/10 transform rounded-lg shadow-2xl shadow-[#000]/40 transition-all sm:my-8 sm:w-full sm:max-w-lg p-4 overflow-x-visible">
                                     <span className='text-2xl font-semibold flex justify-between w-full mb-4'>
                                         <div className="flex items-center gap-4">
 
@@ -131,7 +131,7 @@ export default function TaskModal({ boardName, triggerComponent, methodType, def
                                                 onChange={(e) => setTitle(e.target.value)}
                                                 placeholder="New task"
                                                 defaultValue={defaultValues.title}
-                                                className='bg-dark min-h-[44px] w-full p-2 rounded outline-none focus:shadow-xl focus:shadow-[#000]/30 ease-out duration-200 resize-none text-lg'></TextareaAutosize>
+                                                className='bg-background placeholder:text-[#fff]/40 min-h-[44px] w-full p-2 rounded outline-none focus:shadow-xl focus:shadow-[#000]/30 ease-out duration-200 resize-none text-lg'></TextareaAutosize>
                                         </div>
 
                                         {/* description */}
@@ -143,7 +143,7 @@ export default function TaskModal({ boardName, triggerComponent, methodType, def
                                                 onChange={(e) => setDescription(e.target.value)}
                                                 placeholder="Add a description"
                                                 defaultValue={defaultValues.description}
-                                                className='bg-dark min-h-[135px] w-full p-2 rounded outline-none focus:shadow-xl focus:shadow-[#000]/30 ease-out duration-200 resize-none text-sm'></TextareaAutosize>
+                                                className='bg-background placeholder:text-[#fff]/40 min-h-[135px] w-full p-2 rounded outline-none focus:shadow-xl focus:shadow-[#000]/30 ease-out duration-200 resize-none text-sm'></TextareaAutosize>
                                         </div>
 
                                         {/* tags */}
@@ -157,52 +157,62 @@ export default function TaskModal({ boardName, triggerComponent, methodType, def
                                             </div>
                                         </div>
 
-                                        <hr className='w-full h-[1px] opacity-10'></hr>
+                                        <hr className='w-full opacity-10'></hr>
 
                                         {/* private */}
                                         <div className='flex w-full justify-between'>
                                             <div>
                                                 <span className="flex gap-2 items-center">
                                                     <HiLockClosed className="opacity-40"></HiLockClosed>
-                                                    Private Task
+                                                    <span className=" text-sm">Private Task</span>
                                                 </span>
                                                 <small className='opacity-40'>Enabling this function will restrict guest users from viewing this task.</small>
                                             </div>
                                             <Checkbox isChecked={isPrivate} setIsChecked={setIsPrivate}></Checkbox>
                                         </div>
+
+
                                     </form>
 
                                     <hr className='w-full h-[1px] opacity-10'></hr>
 
-                                    <div className="flex w-full justify-end gap-2">
-                                        <button
-                                            type="button"
-                                            className="flex justify-center items-center gap-2 rounded-md border border-gray/10 px-4 py-2 text-sm font-medium hover:bg-gray/10 ease-out duration-200"
-                                            onClick={() => setOpen(false)}
-                                            ref={cancelButtonRef}
+                                    <div className="flex w-full justify-between items-center">
+                                        <button type="button"
+                                            className="flex justify-center min-w-fit text-danger opacity-40 hover:opacity-100 text-sm w-auto items-center gap-2 font-medium ease-out duration-200"
                                         >
-                                            Cancel
+                                            Delete Task
                                         </button>
 
-                                        {/* create */}
-                                        {methodType === methodTypes.CREATE && <button
-                                            type="button"
-                                            className="bg-primary hover:bg-[#ffffff] hover:text-[#000000] flex justify-center items-center gap-2 rounded-md border border-gray/10 bg-white px-4 py-2 text-sm font-semibold ease-out duration-200"
-                                            onClick={onSubmit}
-                                            ref={cancelButtonRef}
-                                        >
-                                            <HiOutlinePlus></HiOutlinePlus>Add
-                                        </button>}
+                                        <div className="flex w-full justify-end gap-2">
+                                            <button
+                                                type="button"
+                                                className="flex justify-center items-center gap-2 rounded-md border border-gray/10 px-4 py-2 text-sm font-medium hover:bg-gray/10 ease-out duration-200"
+                                                onClick={() => setOpen(false)}
+                                                ref={cancelButtonRef}
+                                            >
+                                                Cancel
+                                            </button>
 
-                                        {/* update */}
-                                        {methodType === methodTypes.UPDATE && <button
-                                            type="button"
-                                            className="bg-primary hover:bg-[#ffffff] hover:text-[#000000] flex justify-center items-center gap-2 rounded-md border border-gray/10 bg-white px-4 py-2 text-sm font-semibold ease-out duration-200"
-                                            onClick={onSubmit}
-                                            ref={cancelButtonRef}
-                                        >
-                                            <HiOutlineRefresh className='opacity-40'></HiOutlineRefresh>Update
-                                        </button>}
+                                            {/* create */}
+                                            {methodType === methodTypes.CREATE && <button
+                                                type="button"
+                                                className="bg-primary hover:bg-[#ffffff] hover:text-[#000000] flex justify-center items-center gap-2 rounded-md border border-gray/10 bg-white px-4 py-2 text-sm font-semibold ease-out duration-200"
+                                                onClick={onSubmit}
+                                                ref={cancelButtonRef}
+                                            >
+                                                <HiOutlinePlus></HiOutlinePlus>Add
+                                            </button>}
+
+                                            {/* update */}
+                                            {methodType === methodTypes.UPDATE && <button
+                                                type="button"
+                                                className="bg-primary hover:bg-[#ffffff] hover:text-[#000000] flex justify-center items-center gap-2 rounded-md border border-gray/10 bg-white px-4 py-2 text-sm font-semibold ease-out duration-200"
+                                                onClick={onSubmit}
+                                                ref={cancelButtonRef}
+                                            >
+                                                <HiOutlineRefresh className='opacity-40'></HiOutlineRefresh>Update
+                                            </button>}
+                                        </div>
                                     </div>
                                 </Dialog.Panel>
                             </Transition.Child>

@@ -29,6 +29,7 @@ module.exports = {
       dark: "#1b1b21",
       gray: "#d8dcec",
       background: "#0c0c0f",
+      danger: "#ff193c"
     },
     fontFamily: {
       notoStans: ["var(--font-noto-sans)"],

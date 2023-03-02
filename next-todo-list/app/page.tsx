@@ -80,7 +80,13 @@ export default function Home() {
 
       <div className="bg-dark mt-4 rounded-lg pl-2 pt-2 pr-8 flex flex-col gap-8">
         {/* date today */}
-        <small className="opacity-40 flex gap-2 items-center"><HiClock></HiClock> {dateToday}</small>
+        <small className="opacity-40 flex gap-2 items-center">
+          <div className="bg-primary h-[15px] w-[15px] rounded-full text-[#fff] pt-[2px] pl-[1px] flex items-center justify-center text-[7px] align-middle">
+            H
+          </div>
+          <HiClock></HiClock>
+          {dateToday}
+        </small>
 
         {/* headers */}
         <div className="flex pt-8 pl-12 flex-col gap-2">
@@ -95,23 +101,25 @@ export default function Home() {
           <div className="flex items-center gap-8">
             <div className="text-sm flex gap-1">
               <span className="opacity-40">Workspace</span>
-              <p className="bg-primary/20 px-2 rounded-full text-primary">{workspace}</p>
+              <p className="bg-primary/20 px-2 rounded-full text-[#9470ff]">{workspace}</p>
               <p className="bg-admin/20 px-2 rounded-full text-admin">{"admin-view"}</p>
             </div>
 
             <Filters></Filters>
           </div>
 
-          <hr className='text-gray/20'></hr>
+          {/* <hr className='text-gray/10'></hr> */}
+
+          <input placeholder="Search task" className='bg-background min-h-[44px] w-full p-2 rounded outline-none focus:shadow-xl focus:shadow-[#000]/30 ease-out duration-200 resize-none text-sm placeholder:text-[#fff]/40'></input>
         </div>
 
 
         {/* kanban */}
-        <div className="flex gap-8 pl-12 w-full flex-1">
-          <Board boardName={"📩 Backlog"} tasks={backLogTasks}></Board>
-          <Board boardName={"🎯 Todo"} tasks={toDoTasks}></Board>
-          <Board boardName={"🚚 In Progress"} tasks={inProgressTasks}></Board>
-          <Board boardName={"✅ Done"} tasks={doneTasks}></Board>
+        <div className="flex gap-8 pl-12">
+            <Board boardName={"📩 Backlog"} tasks={backLogTasks}></Board>
+            <Board boardName={"🎯 Todo"} tasks={toDoTasks}></Board>
+            <Board boardName={"🚚 In Progress"} tasks={inProgressTasks}></Board>
+            <Board boardName={"✅ Done"} tasks={doneTasks}></Board>
           <Board boardName={"❌ Cancelled"} tasks={cancelledTasks}></Board>
         </div>
       </div>

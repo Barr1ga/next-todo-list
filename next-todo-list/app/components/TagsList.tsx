@@ -1,4 +1,5 @@
 import React from 'react'
+import TagCircle from './TagCircle';
 
 export default function TagsList() {
     const tags = [
@@ -16,10 +17,9 @@ export default function TagsList() {
             <small className='opacity-40'>Workspace Tags</small>
             <div className=''>
                 {tags.map((tag) => {
-                    const circleClasses = "bg-".concat(tag.color).concat(" min-h-[10px] min-w-[10px] rounded-full");
                     return (
-                        <div className="flex gap-3 items-center rounded p-2 hover:bg-gray/10 ease-out duration-200 cursor-pointer">
-                            <div className={circleClasses}></div>
+                        <div className="flex gap-3 items-center rounded px-2 py-1 hover:bg-gray/10 ease-out duration-200 cursor-pointer">
+                            <TagCircle color={tag.color}></TagCircle>
                             <span className="text-sm pr-0.5">{tag.name}</span>
                         </div>
                     )
