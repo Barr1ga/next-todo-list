@@ -1,107 +1,125 @@
 "use client";
 import { useMutation, useQuery } from "@/convex/_generated/react";
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment, useRef, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import { HiOutlinePlus, HiLockClosed, HiOutlineX, HiOutlineRefresh, HiOutlineTrash } from "react-icons/hi"
+import { HiLockClosed, HiOutlineX, HiOutlineRefresh } from "react-icons/hi"
 import { Tag, Task } from "@/app/config/interfaceTypes"
 import TextareaAutosize from 'react-textarea-autosize';
 import Dropdown from "@/app/components/Dropdown"
 import HashTag from './HashTag';
 import Checkbox from './Checkbox';
-import { methodTypes } from '../config/methodTypes';
 import { taskStatus } from '../config/taskStatus';
 import AssignTags from './AssignTags';
+import { GenericId } from "convex/values";
 
-interface Props {
-    open: boolean;
-    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const colors = {
-    color1: "#27e64d",
-    color2: "#1962ff",
-    color3: "#7a38ff",
-    color4: "#ff3651",
-    color5: "#ff5297",
-    color6: "#f0353b",
-    color7: "#f08635",
-    color8: "#fff53b",
-    color9: "#537199",
-    color10: "#eca1ff",
-    color11: "#aeffa1",
-    color12: "#aeffa1",
-}
-
-export default function TaskModal({ boardName, triggerComponent, methodType, defaultValues }: { boardName: string, triggerComponent: any, methodType: string, defaultValues: Task }) {
-    const tags = [
-        { uid: "1", name: "Scool", color: "color1" },
-        { uid: "2", name: "Family", color: "color2" },
-        { uid: "3", name: "Work", color: "color3" },
-        { uid: "4", name: "Guest", color: "color4" },
-    ]
-
+export default function TaskInfo({ boardName, triggerComponent, defaultValues }: { boardName: string, triggerComponent: any, defaultValues: Task }) {
+    const tags = useQuery("tags/getTags") || [];
+    const updateTagMutation = useMutation("tags/updateTag");
     const [open, setOpen] = useState(false);
-    const [assignedTags, setAssignedTags] = useState(
-        methodType === methodTypes.CREATE ? [] : defaultValues.tags
-    );
-    const [isPrivate, setIsPrivate] = useState<boolean>(defaultValues?.isPrivate ? true : false);
-    const [title, setTitle] = useState<string>("");
-    const [description, setDescription] = useState<string>("");
-    const cancelButtonRef = useRef(null);
-    const titleRef = useRef<HTMLInputElement | null>(null);
-    const [status, setStatus] = useState(defaultValues.status);
+    // [] of tag._id
+    var defaultAssignedTags = tags.filter((tag: Tag) => { if (tag.tasks && tag.tasks.some((task: GenericId<string>) => task.id === defaultValues._id.id && task.tableName === defaultValues._id.tableName)) { return tag } });
+    const [assignedTags, setAssignedTags] = useState<Tag[]>(tags.filter((tag: Tag) => { if (tag.tasks && tag.tasks.some((task: GenericId<string>) => task.id === defaultValues._id.id && task.tableName === defaultValues._id.tableName)) { return tag } }));
+    const [unassignedTags, setUnassignedTags] = useState<Tag[]>([]);
 
-    const createTaskMutation = useMutation("tasks/createTask");
-    const updateTaskMutation = useMutation("tasks/createTask");
+    const [isPrivate, setIsPrivate] = useState<boolean>(defaultValues.isPrivate);
+    const [title, setTitle] = useState<string>(defaultValues.title);
+    const [description, setDescription] = useState<string>(defaultValues.description);
+    const cancelButtonRef = useRef(null);
+    const [status, setStatus] = useState(boardName);
+
+    const updateTaskMutation = useMutation("tasks/updateTask");
+    const deleteTaskMutation = useMutation("tasks/deleteTask");
 
     const statusOptions = {
         options: Object.values(taskStatus),
         defaultValue: Object.values(taskStatus).findIndex((status) => status === defaultValues.status)
     }
 
-    function assignTag(uid: string) {
-        setAssignedTags([...assignedTags, uid]);
+    useEffect(() => {
+        defaultAssignedTags = tags.filter((tag: Tag) => { if (tag.tasks && tag.tasks.some((task: GenericId<string>) => task.id === defaultValues._id.id && task.tableName === defaultValues._id.tableName)) { return tag } });
+        setAssignedTags(tags.filter((tag: Tag) => { if (tag.tasks && tag.tasks.some((task: GenericId<string>) => task.id === defaultValues._id.id && task.tableName === defaultValues._id.tableName)) { return tag } }));
+        setUnassignedTags([]);
+    }, [tags])
+
+
+    function closeModal() {
+        setOpen(false);
+        setAssignedTags(tags.filter((tag: Tag) => { if (tag.tasks && tag.tasks.some((task: GenericId<string>) => task.id === defaultValues._id.id && task.tableName === defaultValues._id.tableName)) { return tag } }))
+        setUnassignedTags([]);
+        setIsPrivate(defaultValues.isPrivate);
+        setTitle(defaultValues.title);
+        setDescription(defaultValues.description);
     }
 
-    async function createTask(data: Task) {
-        const res = await createTaskMutation(data);
-        if (!res) {
-            throw new Error('Failed to fetch data');
-        }
-
-        return res;
+    function assignTag(tagParam: Tag) {
+        setAssignedTags([...assignedTags, tagParam]);
+        setUnassignedTags(unassignedTags.filter((tag) => tag._id !== tagParam._id));
     }
 
-    async function updateTask(data: Task) {
-        const res = await createTaskMutation(data);
-        if (!res) {
-            throw new Error('Failed to fetch data');
-        }
+    function unassignTag(tagParam: Tag) {
+        setAssignedTags(assignedTags.filter((tag) => tag._id !== tagParam._id));
+        setUnassignedTags([...unassignedTags, tagParam]);
+    }
 
-        return res;
+    function onDelete() {
+        const res = deleteTaskMutation(defaultValues._id);
     }
 
     function onSubmit() {
+        // clean assigned & unassigned tags to modify only assigned and unassigned tag documentst in convex
+        const cleanedAssignedTag = assignedTags.filter((assignedTag: Tag) => !defaultAssignedTags.some((defaultTag: Tag) => defaultTag._id.id === assignedTag._id.id));
+        const assignedTaskIds = cleanedAssignedTag.map((tag: Tag) => tag._id);
+        const unassignedTaskIds = unassignedTags.map((tag: Tag) => tag._id);
+
         const data = {
             title,
             description,
             status,
-            tags: assignedTags,
             isPrivate,
             date: new Date().toISOString(),
         }
 
-        if (methodType === methodTypes.CREATE) {
-            const result = createTask(data);
-            console.log(data);
+        const updateTaskData = {
+            documentId: defaultValues._id,
+            taskData: data,
         }
 
-        if (methodType === methodTypes.UPDATE) {
-            console.log("Update");
-            console.log(data);
+        if (assignedTaskIds.length > 0) {
+            assignedTaskIds.forEach((_id) => {
+                const currentTag = tags.find((tag: Tag) => tag._id === _id);
 
+                const updateTagData = {
+                    documentId: currentTag._id,
+                    tagData: {
+                        name: currentTag.name,
+                        color: currentTag.color,
+                        tasks: currentTag.tasks ? [...currentTag.tasks, defaultValues._id] : [defaultValues._id]
+                    },
+                }
+
+                const tagUpdateRes = updateTagMutation(updateTagData);
+            })
         }
 
+        if (unassignedTaskIds.length > 0) {
+            unassignedTaskIds.forEach((_id) => {
+                const currentTag = tags.find((tag: Tag) => tag._id === _id);
+
+                const updateTagData = {
+                    documentId: currentTag._id,
+                    tagData: {
+                        name: currentTag.name,
+                        color: currentTag.color,
+                        tasks: currentTag.tasks ? currentTag.tasks.filter((task: GenericId<string>) => task.id !== defaultValues._id.id && task.tableName !== defaultValues._id.id) : currentTag.tasks
+                    },
+                }
+
+                const tagUpdateRes = updateTagMutation(updateTagData);
+            })
+        }
+
+        const res = updateTaskMutation(updateTaskData);
+        // console.log(res);
         setOpen(false);
     }
 
@@ -109,7 +127,7 @@ export default function TaskModal({ boardName, triggerComponent, methodType, def
         <>
             <div onClick={(e) => setOpen((prev: boolean) => !prev)}>{triggerComponent}</div>
             <Transition.Root show={open} as={Fragment}>
-                <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpen}>
+                <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={closeModal}>
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -138,10 +156,10 @@ export default function TaskModal({ boardName, triggerComponent, methodType, def
                                         <div className="flex items-center gap-4">
 
                                             {/* title */}
-                                            {methodType} {boardName}
-                                            {methodType === methodTypes.UPDATE && <Dropdown stateValue={status} stateSetter={setStatus} options={statusOptions.options}></Dropdown>}
+                                            {"Update " + boardName + "task"}
+                                            <Dropdown stateValue={status} stateSetter={setStatus} options={statusOptions.options}></Dropdown>
                                         </div>
-                                        <button type="button" onClick={() => setOpen(false)} className="opacity-40 hover:opacity-100 ease-out duration-200">
+                                        <button type="button" onClick={() => closeModal()} className="opacity-40 hover:opacity-100 ease-out duration-200">
                                             <HiOutlineX></HiOutlineX>
                                         </button>
                                     </span>
@@ -157,7 +175,7 @@ export default function TaskModal({ boardName, triggerComponent, methodType, def
                                                 onChange={(e) => setTitle(e.target.value)}
                                                 placeholder="New task"
                                                 defaultValue={defaultValues.title}
-                                                className='bg-background placeholder:text-[#fff]/40 min-h-[44px] w-full p-2 rounded outline-none focus:shadow-xl focus:shadow-[#000]/30 ease-out duration-200 resize-none text-lg'></TextareaAutosize>
+                                                className='bg-background placeholder:text-[#fff]/40 min-h-[44px] w-full py-2 px-4 rounded outline-none focus:shadow-xl focus:shadow-[#000]/30 ease-out duration-200 resize-none text-lg'></TextareaAutosize>
                                         </div>
 
                                         {/* description */}
@@ -169,7 +187,7 @@ export default function TaskModal({ boardName, triggerComponent, methodType, def
                                                 onChange={(e) => setDescription(e.target.value)}
                                                 placeholder="Add a description"
                                                 defaultValue={defaultValues.description}
-                                                className='bg-background placeholder:text-[#fff]/40 min-h-[135px] w-full p-2 rounded outline-none focus:shadow-xl focus:shadow-[#000]/30 ease-out duration-200 resize-none text-sm'></TextareaAutosize>
+                                                className='bg-background placeholder:text-[#fff]/40 min-h-[135px] w-full py-2 px-4 rounded outline-none focus:shadow-xl focus:shadow-[#000]/30 ease-out duration-200 resize-none text-sm'></TextareaAutosize>
                                         </div>
 
                                         {/* tags */}
@@ -177,7 +195,7 @@ export default function TaskModal({ boardName, triggerComponent, methodType, def
                                             <label className='text-sm'>Tags</label>
                                             <div className='flex w-full flex-wrap gap-1 mt-2'>
                                                 {assignedTags.map((tag, idx: number) => (
-                                                    <HashTag key={idx} tag={tag} withX={true}></HashTag>
+                                                    <HashTag key={idx} tag={tag} withX={true} unassignTag={unassignTag}></HashTag>
                                                 ))}
                                                 <AssignTags assignedTags={assignedTags} tagSelector={assignTag} assignTags={true} all={false}></AssignTags>
                                             </div>
@@ -204,6 +222,7 @@ export default function TaskModal({ boardName, triggerComponent, methodType, def
 
                                     <div className="flex w-full justify-between items-center">
                                         <button type="button"
+                                            onClick={onDelete}
                                             className="flex justify-center min-w-fit text-danger opacity-40 hover:opacity-100 text-sm w-auto items-center gap-2 font-medium ease-out duration-200"
                                         >
                                             Delete Task
@@ -213,31 +232,21 @@ export default function TaskModal({ boardName, triggerComponent, methodType, def
                                             <button
                                                 type="button"
                                                 className="flex justify-center items-center gap-2 rounded-md border border-gray/10 px-4 py-2 text-sm font-medium hover:bg-gray/10 ease-out duration-200"
-                                                onClick={() => setOpen(false)}
+                                                onClick={() => closeModal()}
                                                 ref={cancelButtonRef}
                                             >
                                                 Cancel
                                             </button>
 
-                                            {/* create */}
-                                            {methodType === methodTypes.CREATE && <button
-                                                type="button"
-                                                className="bg-primary hover:bg-[#ffffff] hover:text-[#000000] flex justify-center items-center gap-2 rounded-md border border-gray/10 bg-white px-4 py-2 text-sm font-semibold ease-out duration-200"
-                                                onClick={onSubmit}
-                                                ref={cancelButtonRef}
-                                            >
-                                                <HiOutlinePlus></HiOutlinePlus>Add
-                                            </button>}
-
                                             {/* update */}
-                                            {methodType === methodTypes.UPDATE && <button
+                                            <button
                                                 type="button"
                                                 className="bg-primary hover:bg-[#ffffff] hover:text-[#000000] flex justify-center items-center gap-2 rounded-md border border-gray/10 bg-white px-4 py-2 text-sm font-semibold ease-out duration-200"
                                                 onClick={onSubmit}
                                                 ref={cancelButtonRef}
                                             >
                                                 <HiOutlineRefresh className='opacity-40'></HiOutlineRefresh>Update
-                                            </button>}
+                                            </button>
                                         </div>
                                     </div>
                                 </Dialog.Panel>

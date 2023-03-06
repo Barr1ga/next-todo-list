@@ -6,8 +6,4 @@ user = [...guest, C U R]
 
 admin = [...user, D]
 
-guest = {
-    R: true
-}
-
 user.includes(perms.C) ? t : f

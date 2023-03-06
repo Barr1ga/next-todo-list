@@ -20,6 +20,6 @@
     /* Prevents node_modules from adding additional global types e.g. node types */
     "types": []
   },
-  "include": ["./**/*"],
+  "include": ["./**/*", "../app/utils/permissions.ts"],
   "exclude": ["./_generated", "./actions"]
 }
