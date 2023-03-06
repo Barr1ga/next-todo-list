@@ -8,8 +8,8 @@ import { GenericId } from 'convex/values';
 import { Tag } from '../config/interfaceTypes';
 
 export default function TagsFilter() {
-  const { tagFilter, selectedTagFilter, updateTagFilter, selectTagFilter } = useStore();
-  const tags = useQuery("tags/getTags") || [];
+  const { signedInUser, tagFilter, selectedTagFilter, updateTagFilter, selectTagFilter } = useStore();
+  const tags = useQuery("tags/getTags", signedInUser) || [];
 
   function handleSelectTagFilter(tagUid: GenericId<string>) {
     updateTagFilter(true);

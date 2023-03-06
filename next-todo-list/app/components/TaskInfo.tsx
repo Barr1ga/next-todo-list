@@ -11,9 +11,11 @@ import Checkbox from './Checkbox';
 import { taskStatus } from '../config/taskStatus';
 import AssignTags from './AssignTags';
 import { GenericId } from "convex/values";
+import useStore from "../(store)/store";
 
 export default function TaskInfo({ boardName, triggerComponent, defaultValues }: { boardName: string, triggerComponent: any, defaultValues: Task }) {
-    const tags = useQuery("tags/getTags") || [];
+    const { signedInUser } = useStore();
+    const tags = useQuery("tags/getTags", signedInUser) || [];
     const updateTagMutation = useMutation("tags/updateTag");
     const [open, setOpen] = useState(false);
     // [] of tag._id
@@ -62,7 +64,7 @@ export default function TaskInfo({ boardName, triggerComponent, defaultValues }:
     }
 
     function onDelete() {
-        const res = deleteTaskMutation(defaultValues._id);
+        const res = deleteTaskMutation(defaultValues._id, signedInUser);
     }
 
     function onSubmit() {
@@ -97,7 +99,7 @@ export default function TaskInfo({ boardName, triggerComponent, defaultValues }:
                     },
                 }
 
-                const tagUpdateRes = updateTagMutation(updateTagData);
+                const tagUpdateRes = updateTagMutation(updateTagData, signedInUser);
             })
         }
 
@@ -114,11 +116,11 @@ export default function TaskInfo({ boardName, triggerComponent, defaultValues }:
                     },
                 }
 
-                const tagUpdateRes = updateTagMutation(updateTagData);
+                const tagUpdateRes = updateTagMutation(updateTagData, signedInUser);
             })
         }
 
-        const res = updateTaskMutation(updateTaskData);
+        const res = updateTaskMutation(updateTaskData, signedInUser);
         // console.log(res);
         setOpen(false);
     }
@@ -157,7 +159,9 @@ export default function TaskInfo({ boardName, triggerComponent, defaultValues }:
 
                                             {/* title */}
                                             {"Update " + boardName + "task"}
-                                            <Dropdown stateValue={status} stateSetter={setStatus} options={statusOptions.options}></Dropdown>
+                                            {signedInUser?.userType !== "Guest" &&
+                                                <Dropdown stateValue={status} stateSetter={setStatus} options={statusOptions.options}></Dropdown>
+                                            }
                                         </div>
                                         <button type="button" onClick={() => closeModal()} className="opacity-40 hover:opacity-100 ease-out duration-200">
                                             <HiOutlineX></HiOutlineX>
@@ -175,6 +179,7 @@ export default function TaskInfo({ boardName, triggerComponent, defaultValues }:
                                                 onChange={(e) => setTitle(e.target.value)}
                                                 placeholder="New task"
                                                 defaultValue={defaultValues.title}
+                                                readOnly={signedInUser?.userType === "Guest"}
                                                 className='bg-background placeholder:text-[#fff]/40 min-h-[44px] w-full py-2 px-4 rounded outline-none focus:shadow-xl focus:shadow-[#000]/30 ease-out duration-200 resize-none text-lg'></TextareaAutosize>
                                         </div>
 
@@ -186,6 +191,7 @@ export default function TaskInfo({ boardName, triggerComponent, defaultValues }:
                                                 maxRows={9}
                                                 onChange={(e) => setDescription(e.target.value)}
                                                 placeholder="Add a description"
+                                                readOnly={signedInUser?.userType === "Guest"}
                                                 defaultValue={defaultValues.description}
                                                 className='bg-background placeholder:text-[#fff]/40 min-h-[135px] w-full py-2 px-4 rounded outline-none focus:shadow-xl focus:shadow-[#000]/30 ease-out duration-200 resize-none text-sm'></TextareaAutosize>
                                         </div>
@@ -203,52 +209,55 @@ export default function TaskInfo({ boardName, triggerComponent, defaultValues }:
 
                                         <hr className='w-full opacity-10'></hr>
 
-                                        {/* private */}
-                                        <div className='flex w-full justify-between'>
-                                            <div>
-                                                <span className="flex gap-2 items-center">
-                                                    <HiLockClosed className="opacity-40"></HiLockClosed>
-                                                    <span className=" text-sm">Private Task</span>
-                                                </span>
-                                                <small className='opacity-40'>Enabling this function will restrict guest users from viewing this task.</small>
-                                            </div>
-                                            <Checkbox isChecked={isPrivate} setIsChecked={setIsPrivate}></Checkbox>
-                                        </div>
 
+                                        {/* private */}
+                                        {signedInUser?.userType !== "Guest" &&
+                                            <div className='flex w-full justify-between'>
+                                                <div>
+                                                    <span className="flex gap-2 items-center">
+                                                        <HiLockClosed className="opacity-40"></HiLockClosed>
+                                                        <span className=" text-sm">Private Task</span>
+                                                    </span>
+                                                    <small className='opacity-40'>Enabling this function will restrict guest users from viewing this task.</small>
+                                                </div>
+                                                <Checkbox isChecked={isPrivate} setIsChecked={setIsPrivate}></Checkbox>
+                                            </div>
+                                        }
 
                                     </form>
+                                    {signedInUser?.userType !== "Guest" && <>
+                                        <hr className='w-full h-[1px] opacity-10'></hr>
 
-                                    <hr className='w-full h-[1px] opacity-10'></hr>
-
-                                    <div className="flex w-full justify-between items-center">
-                                        <button type="button"
-                                            onClick={onDelete}
-                                            className="flex justify-center min-w-fit text-danger opacity-40 hover:opacity-100 text-sm w-auto items-center gap-2 font-medium ease-out duration-200"
-                                        >
-                                            Delete Task
-                                        </button>
-
-                                        <div className="flex w-full justify-end gap-2">
-                                            <button
-                                                type="button"
-                                                className="flex justify-center items-center gap-2 rounded-md border border-gray/10 px-4 py-2 text-sm font-medium hover:bg-gray/10 ease-out duration-200"
-                                                onClick={() => closeModal()}
-                                                ref={cancelButtonRef}
+                                        <div className="flex w-full justify-between items-center">
+                                            <button type="button"
+                                                onClick={onDelete}
+                                                className="flex justify-center min-w-fit text-danger opacity-40 hover:opacity-100 text-sm w-auto items-center gap-2 font-medium ease-out duration-200"
                                             >
-                                                Cancel
+                                                Delete Task
                                             </button>
 
-                                            {/* update */}
-                                            <button
-                                                type="button"
-                                                className="bg-primary hover:bg-[#ffffff] hover:text-[#000000] flex justify-center items-center gap-2 rounded-md border border-gray/10 bg-white px-4 py-2 text-sm font-semibold ease-out duration-200"
-                                                onClick={onSubmit}
-                                                ref={cancelButtonRef}
-                                            >
-                                                <HiOutlineRefresh className='opacity-40'></HiOutlineRefresh>Update
-                                            </button>
+                                            <div className="flex w-full justify-end gap-2">
+                                                <button
+                                                    type="button"
+                                                    className="flex justify-center items-center gap-2 rounded-md border border-gray/10 px-4 py-2 text-sm font-medium hover:bg-gray/10 ease-out duration-200"
+                                                    onClick={() => closeModal()}
+                                                    ref={cancelButtonRef}
+                                                >
+                                                    Cancel
+                                                </button>
+
+                                                {/* update */}
+                                                <button
+                                                    type="button"
+                                                    className="bg-primary hover:bg-[#ffffff] hover:text-[#000000] flex justify-center items-center gap-2 rounded-md border border-gray/10 bg-white px-4 py-2 text-sm font-semibold ease-out duration-200"
+                                                    onClick={onSubmit}
+                                                    ref={cancelButtonRef}
+                                                >
+                                                    <HiOutlineRefresh className='opacity-40'></HiOutlineRefresh>Update
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </>}
                                 </Dialog.Panel>
                             </Transition.Child>
                         </div>

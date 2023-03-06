@@ -8,7 +8,7 @@ export default mutation(
   async (
     { db },
     updateTagData: { documentId: GenericId<string>; tagData: TagData },
-    user: User
+    user: User | undefined
   ) => {
     protect(user, tagPermissions.UPDATE_TAGS);
 

@@ -6,6 +6,8 @@ import TagsFilter from "./TagsFilter";
 import useStore from "../(store)/store";
 
 export default function Filters() {
+    const { signedInUser } = useStore();
+    
     const sortOptions = [
         "None",
         "Ascending",
@@ -17,7 +19,8 @@ export default function Filters() {
     return (
         <div className="flex gap-2">
             {/* tags */}
-            <TagsFilter></TagsFilter>
+
+            {signedInUser && <TagsFilter></TagsFilter>}
 
             {/* sort */}
             <Dropdown stateValue={orderFilter} stateSetter={updateOrderFilter} options={sortOptions}></Dropdown>

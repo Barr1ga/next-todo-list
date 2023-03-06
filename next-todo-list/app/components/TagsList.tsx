@@ -2,13 +2,15 @@
 import { useQuery } from '@/convex/_generated/react';
 import { useState } from 'react'
 import { HiChevronDown, HiChevronRight, HiCog, HiPlus } from 'react-icons/hi';
+import useStore from '../(store)/store';
 import CreateTag from './CreateTag';
 import TagCircle from './TagCircle';
 import TagInfo from './TagInfo';
 
 export default function TagsList() {
+    const { signedInUser } = useStore();
     const [show, setShow] = useState<boolean>(true);
-    const tags = useQuery("tags/getTags") || [];
+    const tags = useQuery("tags/getTags", signedInUser) || [];
 
     return (
         <div className="flex flex-col gap-2">
@@ -20,9 +22,9 @@ export default function TagsList() {
                     {!show && <HiChevronRight></HiChevronRight>}
                     <small>Workspace Tags</small>
                 </div>
-                <CreateTag triggerComponent={
+                {signedInUser?.userType === "Administrator" && <CreateTag triggerComponent={
                     <HiPlus className='opacity-40 hover:opacity-100 ease-out duration-200'></HiPlus>
-                }></CreateTag>
+                }></CreateTag>}
             </div>
 
             <div className={`${show ? "max-h-96 opacity-100" : "max-h-0 opacity-0"} ease-in-out duration-200 flex flex-col`}>
@@ -35,12 +37,13 @@ export default function TagsList() {
                                 </div>
                                 <span className="text-sm pr-0.5 w-full">{tag.name}</span>
                             </div>
-                            <TagInfo
+                            {signedInUser?.userType === "Administrator" &&
+                                <TagInfo
                                 triggerComponent={
                                     <HiCog className="group/edit invisible group-hover/item:visible opacity-40 hover:opacity-100 ease-in"></HiCog>
                                 }
                                 defaultValues={tag}
-                            ></TagInfo>
+                            ></TagInfo>}
 
                         </div>
                     )

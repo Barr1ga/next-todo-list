@@ -5,9 +5,11 @@ import TagCircle from './TagCircle'
 import { GenericId } from 'convex/values'
 import { useQuery } from '@/convex/_generated/react'
 import { Tag } from '../config/interfaceTypes'
+import useStore from '../(store)/store'
 
 export default function TagsDropdown({ assignedTags, tagSelector, assignTags, all }: { assignedTags: Tag[], tagSelector: (tag: Tag) => void, assignTags: boolean, all: boolean }) {
-  const tags = useQuery("tags/getTags") || [];
+  const { signedInUser } = useStore();
+  const tags = useQuery("tags/getTags", signedInUser) || [];
   const filteredTags = tags.filter((tag) => !assignedTags.includes(tag));
 
   return (

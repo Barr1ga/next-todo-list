@@ -9,9 +9,12 @@ import { User } from '../config/interfaceTypes';
 export default function AccountSelector() {
     const [show, setShow] = useState<boolean>(true);
     const users = useQuery("users/getUsers") || [];
-    const { signedInUser, logInUser } = useStore();
+    const { signedInUser, logInUser, updateSearchFilter, updateTagFilter, selectTagFilter } = useStore();
 
     function changeAccount(user: User) {
+        updateTagFilter(false);
+        selectTagFilter(undefined);
+        updateSearchFilter("");
         logInUser(user);
     }
 

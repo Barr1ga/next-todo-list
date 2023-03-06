@@ -5,6 +5,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import { HiOutlinePlus, HiLockClosed, HiOutlineX } from "react-icons/hi"
 import TextareaAutosize from 'react-textarea-autosize';
 import Checkbox from './Checkbox';
+import useStore from "../(store)/store";
 
 interface Props {
     open: boolean;
@@ -12,6 +13,8 @@ interface Props {
 }
 
 export default function CeateTask({ boardName, triggerComponent }: { boardName: string, triggerComponent: any }) {
+    const { signedInUser } = useStore();
+
     const [open, setOpen] = useState(false);
     const [isPrivate, setIsPrivate] = useState<boolean>(false);
     const [title, setTitle] = useState<string>("");
@@ -28,7 +31,7 @@ export default function CeateTask({ boardName, triggerComponent }: { boardName: 
             status,
             isPrivate,
             date: new Date().toISOString(),
-        });
+        }, signedInUser);
 
         setOpen(false);
     }

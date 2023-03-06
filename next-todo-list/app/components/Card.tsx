@@ -10,10 +10,12 @@ import Dropdown from "./Dropdown";
 import { useMutation, useQuery } from "@/convex/_generated/react";
 import { HiLockClosed } from "react-icons/hi";
 import { GenericId } from "convex/values";
+import useStore from "../(store)/store";
 
 export default function Card({ task }: { task: Task }) {
     const date = format(new Date(task.date), "PPpp");
-    const tags = useQuery("tags/getTags") || [];
+    const { signedInUser } = useStore();
+    const tags = useQuery("tags/getTags", signedInUser) || [];
     const assignedTags = tags.filter((tag: Tag) => { if (tag.tasks && tag.tasks.some((taskParam: GenericId<string>) => taskParam.id === task._id.id && taskParam.tableName === task._id.tableName)) { return tag } })
 
     const [status, setStatus] = useState(task.status);
@@ -33,7 +35,7 @@ export default function Card({ task }: { task: Task }) {
             documentId: task._id,
             taskData: data,
         }
-        const res = updateTaskMutation(updateTaskData);
+        const res = updateTaskMutation(updateTaskData, signedInUser);
 
     }
 

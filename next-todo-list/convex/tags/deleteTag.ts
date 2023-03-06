@@ -5,7 +5,7 @@ import protect from "../utils/protect";
 import { mutation } from "../_generated/server";
 
 export default mutation(
-  async ({ db }, documentId: GenericId<string>, user: User) => {
+  async ({ db }, documentId: GenericId<string>, user: User | undefined) => {
     protect(user, tagPermissions.DELETE_TAGS);
 
     const res = db.delete(documentId);

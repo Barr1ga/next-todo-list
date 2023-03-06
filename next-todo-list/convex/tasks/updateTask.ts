@@ -1,12 +1,17 @@
 import { GenericId } from "convex/values";
-import { TaskData } from "../../app/config/interfaceTypes";
+import { TaskData, User } from "../../app/config/interfaceTypes";
+import { taskPermissions } from "../utils/permissions";
+import protect from "../utils/protect";
 import { mutation } from "../_generated/server";
 
 export default mutation(
   async (
     { db },
-    updateTaskData: { documentId: GenericId<string>; taskData: TaskData }
+    updateTaskData: { documentId: GenericId<string>; taskData: TaskData },
+    user: User | undefined
   ) => {
+    protect(user, taskPermissions.UPDATE_TASKS);
+
     const { documentId } = updateTaskData;
     const { title, description, status, isPrivate, date } =
       updateTaskData.taskData;

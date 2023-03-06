@@ -3,7 +3,7 @@ import { tagPermissions } from "../utils/permissions";
 import protect from "../utils/protect";
 import { query } from "../_generated/server";
 
-export default query(async ({ db }, user: User) => {
+export default query(async ({ db }, user: User | undefined) => {
   protect(user, tagPermissions.READ_TAGS);
 
   const res = await db.query("tags").collect();
